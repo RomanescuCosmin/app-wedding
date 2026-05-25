@@ -1,65 +1,92 @@
-import Image from "next/image";
+// Pagina publică de upload (Stage 3).
+// Server component pentru hero (citește env), cu fluxul de upload într-un
+// client component (<Uploader />). Mobile-first, ivoriu/auriu, serif.
+
+import Uploader from "@/components/Uploader";
+
+const COUPLE_NAMES = process.env.NEXT_PUBLIC_COUPLE_NAMES || "Ana & Mihai";
+const WEDDING_DATE = process.env.NEXT_PUBLIC_WEDDING_DATE; // ex. 2026-06-12
+
+function formatWeddingDate(value?: string): string | null {
+  if (!value) return null;
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  return new Intl.DateTimeFormat("ro-RO", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(date);
+}
 
 export default function Home() {
+  const formattedDate = formatWeddingDate(WEDDING_DATE);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="relative flex flex-1 flex-col items-center overflow-hidden px-6 pb-24 pt-16 text-center sm:px-8 sm:pt-24">
+      {/* Fundal atmosferic — degradeuri discrete ivoriu → crem */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10"
+        style={{
+          background:
+            "radial-gradient(120% 90% at 50% -10%, var(--color-cream) 0%, var(--color-ivory) 55%, var(--color-ivory) 100%)",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-24 left-1/2 -z-10 h-72 w-72 -translate-x-1/2 rounded-full opacity-40 blur-3xl"
+        style={{ background: "var(--color-gold)" }}
+      />
+
+      {/* Hero */}
+      <header className="flex w-full max-w-2xl flex-col items-center">
+        <p
+          className="animate-fade-rise text-xs uppercase tracking-[0.35em] text-muted sm:text-sm"
+          style={{ animationDelay: "0.05s" }}
+        >
+          Pozele nunții noastre
+        </p>
+
+        <h1
+          className="animate-fade-rise mt-6 text-5xl leading-[1.05] text-ink sm:text-6xl md:text-7xl"
+          style={{ animationDelay: "0.15s" }}
+        >
+          {COUPLE_NAMES}
+        </h1>
+
+        <div
+          className="animate-draw-line mt-8 h-px w-28"
+          style={{
+            animationDelay: "0.4s",
+            background:
+              "linear-gradient(90deg, transparent, var(--color-gold), transparent)",
+          }}
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+
+        {formattedDate && (
+          <p
+            className="animate-fade-rise mt-8 text-base tracking-wide text-gold-deep sm:text-lg"
+            style={{ animationDelay: "0.3s" }}
+          >
+            {formattedDate}
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+        )}
+
+        <p
+          className="animate-fade-rise mt-6 max-w-md text-lg leading-relaxed text-muted sm:text-xl"
+          style={{ animationDelay: "0.45s" }}
+        >
+          Împarte cu noi momentele surprinse de tine
+        </p>
+      </header>
+
+      {/* Flux de upload */}
+      <div
+        className="animate-fade-rise mt-12 flex w-full justify-center"
+        style={{ animationDelay: "0.6s" }}
+      >
+        <Uploader />
+      </div>
+    </main>
   );
 }

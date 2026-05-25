@@ -1,26 +1,75 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* ============================================================
+   Temă vizuală — nuntă elegantă & romantică
+   Tokeni de design folosiți în toate etapele aplicației.
+   ============================================================ */
+@theme {
+  /* Paletă */
+  --color-ivory: #faf6ef;
+  --color-cream: #f3eada;
+  --color-gold: #c9a24b;
+  --color-gold-deep: #b8924a;
+  --color-ink: #2e2a24;
+  --color-muted: #8a8276;
+
+  /* Fonturi (variabilele sunt setate din next/font în layout.tsx) */
+  --font-serif: var(--font-cormorant);
+  --font-sans: var(--font-inter);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--color-ivory);
+  color: var(--color-ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1,
+h2 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/* Micro-animații discrete pentru intrarea în pagină */
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes draw-line {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.animate-fade-rise {
+  animation: fade-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-draw-line {
+  transform-origin: center;
+  animation: draw-line 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-rise,
+  .animate-draw-line {
+    animation: none;
+  }
 }
