@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-const COUPLE_NAMES = process.env.NEXT_PUBLIC_COUPLE_NAMES || "Ana & Mihai";
+const COUPLE_NAMES = process.env.NEXT_PUBLIC_COUPLE_NAMES || "Irina & Cătălin";
 
 export default function AdminPage() {
   return (

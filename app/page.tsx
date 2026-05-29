@@ -5,7 +5,7 @@
 import Invitation from "@/components/Invitation";
 import Uploader from "@/components/Uploader";
 
-const COUPLE_NAMES = process.env.NEXT_PUBLIC_COUPLE_NAMES || "Ana & Mihai";
+const COUPLE_NAMES = process.env.NEXT_PUBLIC_COUPLE_NAMES || "Irina & Cătălin";
 
 /** Extrage inițialele cuplului din „Andrei & Irina" → ["A", "I"]. */
 function coupleInitials(names: string): [string, string] {
