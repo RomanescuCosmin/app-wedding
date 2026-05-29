@@ -7,6 +7,7 @@ import LoginScreen from "./LoginScreen";
 import Lightbox from "./Lightbox";
 import MediaCard from "./MediaCard";
 import EventQRCode from "./EventQRCode";
+import ConfirmDialog from "./ConfirmDialog";
 
 type AuthState = "checking" | "out" | "in";
 
@@ -29,6 +30,9 @@ export default function AdminGallery({ coupleNames }: AdminGalleryProps) {
   const [loadError, setLoadError] = useState<string | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  // Elementul pentru care s-a cerut ștergerea (deschide dialogul de confirmare).
+  const [pendingDelete, setPendingDelete] = useState<MediaItem | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // Stare descărcare ZIP.
   const [zipBusy, setZipBusy] = useState(false);
@@ -70,42 +74,49 @@ export default function AdminGallery({ coupleNames }: AdminGalleryProps) {
     void check();
   }, [loadList]);
 
-  const handleDelete = useCallback(
-    async (item: MediaItem) => {
-      if (deletingId) return;
-      const ok = window.confirm(
-        `Sigur ștergi „${item.original_name}"? Acțiunea nu poate fi anulată.`,
-      );
-      if (!ok) return;
+  /** Cere ștergerea unui element — deschide dialogul de confirmare. */
+  const requestDelete = useCallback((item: MediaItem) => {
+    setDeleteError(null);
+    setPendingDelete(item);
+  }, []);
 
-      setDeletingId(item.id);
-      try {
-        const res = await fetch("/api/admin/delete", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ path: item.path, id: item.id }),
-        });
-        if (!res.ok) {
-          const data = (await res.json().catch(() => null)) as
-            | { error?: string }
-            | null;
-          window.alert(data?.error ?? "Nu am putut șterge fișierul.");
-          return;
-        }
-        setItems((prev) => prev.filter((it) => it.id !== item.id));
-        // Dacă lightbox-ul era deschis pe acest element, închide-l/ajustează.
-        setLightboxIndex((idx) => {
-          if (idx === null) return idx;
-          return null;
-        });
-      } catch {
-        window.alert("Nu am putut contacta serverul.");
-      } finally {
-        setDeletingId(null);
+  /** Închide dialogul de confirmare (dacă nu e o ștergere în curs). */
+  const cancelDelete = useCallback(() => {
+    if (deletingId) return;
+    setPendingDelete(null);
+    setDeleteError(null);
+  }, [deletingId]);
+
+  /** Confirmă și execută efectiv ștergerea elementului din `pendingDelete`. */
+  const confirmDelete = useCallback(async () => {
+    const item = pendingDelete;
+    if (!item || deletingId) return;
+
+    setDeleteError(null);
+    setDeletingId(item.id);
+    try {
+      const res = await fetch("/api/admin/delete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ path: item.path, id: item.id }),
+      });
+      if (!res.ok) {
+        const data = (await res.json().catch(() => null)) as
+          | { error?: string }
+          | null;
+        setDeleteError(data?.error ?? "Nu am putut șterge fișierul.");
+        return;
       }
-    },
-    [deletingId],
-  );
+      setItems((prev) => prev.filter((it) => it.id !== item.id));
+      // Dacă lightbox-ul era deschis, închide-l (elementul poate să fi dispărut).
+      setLightboxIndex(null);
+      setPendingDelete(null);
+    } catch {
+      setDeleteError("Nu am putut contacta serverul.");
+    } finally {
+      setDeletingId(null);
+    }
+  }, [pendingDelete, deletingId]);
 
   const handleDownloadAll = useCallback(async () => {
     if (zipBusy || items.length === 0) return;
@@ -251,7 +262,7 @@ export default function AdminGallery({ coupleNames }: AdminGalleryProps) {
                 item={item}
                 deleting={deletingId === item.id}
                 onOpen={() => setLightboxIndex(index)}
-                onDelete={() => void handleDelete(item)}
+                onDelete={() => requestDelete(item)}
               />
             </li>
           ))}
@@ -267,6 +278,19 @@ export default function AdminGallery({ coupleNames }: AdminGalleryProps) {
           index={lightboxIndex}
           onClose={() => setLightboxIndex(null)}
           onNavigate={setLightboxIndex}
+        />
+      )}
+
+      {pendingDelete && (
+        <ConfirmDialog
+          title="Ștergi acest moment?"
+          message={`„${pendingDelete.original_name}" va fi șters definitiv din galerie și din stocare. Acțiunea nu poate fi anulată.`}
+          confirmLabel="Șterge"
+          cancelLabel="Anulează"
+          busy={deletingId === pendingDelete.id}
+          error={deleteError}
+          onConfirm={() => void confirmDelete()}
+          onCancel={cancelDelete}
         />
       )}
     </div>

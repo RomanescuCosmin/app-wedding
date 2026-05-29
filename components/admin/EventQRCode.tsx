@@ -55,7 +55,9 @@ export default function EventQRCode({ coupleNames }: EventQRCodeProps) {
   const exportRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // `window.location.origin` e disponibil doar pe client.
+    // `window.location.origin` e disponibil doar pe client; setarea după montare
+    // e intenționată — evită nepotrivirea de hidratare SSR/CSR.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setUrl(resolveEventUrl());
   }, []);
 
@@ -129,11 +131,6 @@ export default function EventQRCode({ coupleNames }: EventQRCodeProps) {
               "linear-gradient(90deg, transparent, var(--color-gold), transparent)",
           }}
         />
-
-        <p className="mx-auto mt-5 max-w-xs text-sm leading-relaxed text-muted">
-          Printează acest cod și pune-l pe mese sau pe invitații. Invitații îl
-          scanează cu telefonul și ajung direct la pagina de încărcare a pozelor.
-        </p>
 
         {/* QR vizibil */}
         <div className="mt-8 flex justify-center">

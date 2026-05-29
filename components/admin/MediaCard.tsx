@@ -85,7 +85,7 @@ export default function MediaCard({
         onClick={onDelete}
         disabled={deleting}
         aria-label={`Șterge ${item.original_name}`}
-        className="absolute right-2.5 top-2.5 flex h-8 w-8 items-center justify-center rounded-full bg-ink/45 text-cream backdrop-blur-sm transition-all duration-300 hover:bg-red-700/85 focus-visible:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold disabled:cursor-wait disabled:opacity-60 sm:opacity-0 sm:group-hover:opacity-100"
+        className="absolute right-2.5 top-2.5 flex h-9 w-9 items-center justify-center rounded-full bg-ink/60 text-cream shadow-md backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:bg-red-700/90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gold disabled:cursor-wait disabled:opacity-60"
       >
         {deleting ? (
           <svg viewBox="0 0 24 24" className="h-4 w-4 animate-spin" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden>

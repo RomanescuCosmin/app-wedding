@@ -19,6 +19,16 @@
   --font-script: var(--font-great-vibes);
 }
 
+/* Cursor de mână pe elemente interactive (Tailwind v4 nu îl mai pune implicit
+   pe butoane). Excludem elementele dezactivate, ca să-și păstreze cursorul. */
+@layer base {
+  button:not(:disabled),
+  [role="button"]:not(:disabled),
+  summary {
+    cursor: pointer;
+  }
+}
+
 /* Caligrafie pentru nume & momente cheie (invitația) */
 .font-script {
   font-family: var(--font-script), "Cormorant Garamond", cursive;
