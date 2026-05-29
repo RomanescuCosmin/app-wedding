@@ -1,28 +1,26 @@
-// Pagina publică de upload (Stage 3).
-// Server component pentru hero (citește env), cu fluxul de upload într-un
-// client component (<Uploader />). Mobile-first, ivoriu/auriu, serif.
+// Pagina publică — invitație minimalistă (numele mirilor și ale nașilor),
+// urmată imediat de fluxul de upload pentru invitați.
+// Server component pentru conținut (citește env); upload într-un client component.
 
+import Invitation from "@/components/Invitation";
 import Uploader from "@/components/Uploader";
 
 const COUPLE_NAMES = process.env.NEXT_PUBLIC_COUPLE_NAMES || "Ana & Mihai";
-const WEDDING_DATE = process.env.NEXT_PUBLIC_WEDDING_DATE; // ex. 2026-06-12
 
-function formatWeddingDate(value?: string): string | null {
-  if (!value) return null;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  return new Intl.DateTimeFormat("ro-RO", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  }).format(date);
+/** Extrage inițialele cuplului din „Andrei & Irina" → ["A", "I"]. */
+function coupleInitials(names: string): [string, string] {
+  // Desparte pe „&", „+" (cu spații opționale) sau cuvântul „și" (între spații).
+  const parts = names.split(/\s*[&+]\s*|\s+și\s+/i).filter(Boolean);
+  const first = parts[0]?.trim().charAt(0).toUpperCase() || "A";
+  const second = parts[1]?.trim().charAt(0).toUpperCase() || "I";
+  return [first, second];
 }
 
 export default function Home() {
-  const formattedDate = formatWeddingDate(WEDDING_DATE);
+  const initials = coupleInitials(COUPLE_NAMES);
 
   return (
-    <main className="relative flex flex-1 flex-col items-center overflow-hidden px-6 pb-24 pt-16 text-center sm:px-8 sm:pt-24">
+    <main className="relative flex flex-1 flex-col items-center overflow-hidden px-5 pb-24 pt-12 sm:px-8 sm:pt-16">
       {/* Fundal atmosferic — degradeuri discrete ivoriu → crem */}
       <div
         aria-hidden
@@ -38,51 +36,29 @@ export default function Home() {
         style={{ background: "var(--color-gold)" }}
       />
 
-      {/* Hero */}
-      <header className="flex w-full max-w-2xl flex-col items-center">
-        <p
-          className="animate-fade-rise text-xs uppercase tracking-[0.35em] text-muted sm:text-sm"
-          style={{ animationDelay: "0.05s" }}
-        >
-          Pozele nunții noastre
-        </p>
+      {/* Invitația minimalistă */}
+      <Invitation coupleNames={COUPLE_NAMES} initials={initials} />
 
-        <h1
-          className="animate-fade-rise mt-6 text-5xl leading-[1.05] text-ink sm:text-6xl md:text-7xl"
-          style={{ animationDelay: "0.15s" }}
-        >
-          {COUPLE_NAMES}
-        </h1>
-
-        <div
-          className="animate-draw-line mt-8 h-px w-28"
-          style={{
-            animationDelay: "0.4s",
-            background:
-              "linear-gradient(90deg, transparent, var(--color-gold), transparent)",
-          }}
+      {/* Invitație la upload — imediat după */}
+      <div
+        className="animate-fade-rise mt-12 flex w-full max-w-lg flex-col items-center text-center"
+        style={{ animationDelay: "0.5s" }}
+      >
+        <span
+          aria-hidden
+          className="h-10 w-px bg-gradient-to-b from-transparent to-gold/50"
         />
-
-        {formattedDate && (
-          <p
-            className="animate-fade-rise mt-8 text-base tracking-wide text-gold-deep sm:text-lg"
-            style={{ animationDelay: "0.3s" }}
-          >
-            {formattedDate}
-          </p>
-        )}
-
-        <p
-          className="animate-fade-rise mt-6 max-w-md text-lg leading-relaxed text-muted sm:text-xl"
-          style={{ animationDelay: "0.45s" }}
-        >
-          Împarte cu noi momentele surprinse de tine
+        <h2 className="mt-6 text-2xl leading-tight text-ink sm:text-3xl">
+          Împarte un moment cu noi
+        </h2>
+        <p className="mt-3 max-w-sm text-base leading-relaxed text-muted">
+          Ai surprins un cadru drag de la nunta noastră? Încarcă-l aici.
         </p>
-      </header>
+      </div>
 
       {/* Flux de upload */}
       <div
-        className="animate-fade-rise mt-12 flex w-full justify-center"
+        className="animate-fade-rise mt-8 flex w-full justify-center"
         style={{ animationDelay: "0.6s" }}
       >
         <Uploader />

@@ -35,6 +35,10 @@ yarn-error.log*
 # dar păstrăm exemplul în repo
 !.env.example
 
+# Claude Code (local — nu se urcă pe GitHub)
+/CLAUDE.md
+/.claude/settings.json
+
 # vercel
 .vercel
 

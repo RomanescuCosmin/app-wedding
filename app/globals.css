@@ -16,6 +16,13 @@
   /* Fonturi (variabilele sunt setate din next/font în layout.tsx) */
   --font-serif: var(--font-cormorant);
   --font-sans: var(--font-inter);
+  --font-script: var(--font-great-vibes);
+}
+
+/* Caligrafie pentru nume & momente cheie (invitația) */
+.font-script {
+  font-family: var(--font-script), "Cormorant Garamond", cursive;
+  font-weight: 400;
 }
 
 html {
@@ -58,6 +65,30 @@ h2 {
   }
 }
 
+/* Cartonul invitației — apariție lină, ca o filă așezată pe masă */
+@keyframes card-rise {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Arcada aurie — se „desenează" de jos în sus la încărcare */
+@keyframes arch-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scaleY(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scaleY(1);
+  }
+}
+
 .animate-fade-rise {
   animation: fade-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
@@ -67,9 +98,20 @@ h2 {
   animation: draw-line 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+.animate-card-rise {
+  animation: card-rise 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-arch-reveal {
+  transform-origin: bottom center;
+  animation: arch-reveal 1.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-fade-rise,
-  .animate-draw-line {
+  .animate-draw-line,
+  .animate-card-rise,
+  .animate-arch-reveal {
     animation: none;
   }
 }

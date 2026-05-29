@@ -3,11 +3,21 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 /**
  * Client Supabase pentru BROWSER / componente client.
  *
- * Folosește cheia publică (anon) și URL-ul public. Poate fi folosit
- * oriunde — atât pe server, cât și în browser — pentru operații
- * permise de politicile RLS (Row Level Security).
+ * Folosește cheia publică (anon) și URL-ul public, pentru operații permise
+ * de politicile RLS (Row Level Security).
+ *
+ * IMPORTANT — instanță unică (singleton):
+ * Returnăm mereu același client. Crearea mai multor instanțe în browser face
+ * ca acestea să se concureze pe „lock"-ul de autentificare (Web Locks API),
+ * ceea ce poate BLOCA upload-urile după primul (al doilea/al treilea fișier
+ * rămân agățate pe „se încarcă"). Tot din acest motiv dezactivăm sesiunea de
+ * auth: aplicația publică folosește doar URL-uri semnate, nu autentificare.
  */
+let browserClient: SupabaseClient | null = null;
+
 export function supabaseBrowser(): SupabaseClient {
+  if (browserClient) return browserClient;
+
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -17,7 +27,14 @@ export function supabaseBrowser(): SupabaseClient {
     );
   }
 
-  return createClient(url, anonKey);
+  browserClient = createClient(url, anonKey, {
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+
+  return browserClient;
 }
 
 /**
