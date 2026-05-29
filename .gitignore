@@ -37,7 +37,7 @@ yarn-error.log*
 
 # Claude Code (local — nu se urcă pe GitHub)
 /CLAUDE.md
-/.claude/settings.json
+/.claude/
 
 # vercel
 .vercel
